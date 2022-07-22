@@ -1,0 +1,59 @@
+m255
+K4
+z2
+!s11f vlog 2020.3 2020.10, Oct 14 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/esi-user/Documents/clock_test/try
+vinitial_try
+!s110 1658471717
+!i10b 1
+!s100 Ba`TX9GOniVmR<UeIDRF^0
+Z1 !s11b Dg1SIo80bB@j0V0VzS_@n1
+IJmh7kWOa:9Xj6FYOn9N9f3
+R0
+w1658471683
+8C:/Users/esi-user/Documents/clock_test/initial_try.v
+FC:/Users/esi-user/Documents/clock_test/initial_try.v
+!i122 60
+L0 1 52
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+Z3 OT;L;2020.3;71
+r1
+!s85 0
+31
+!s108 1658471717.000000
+!s107 C:/Users/esi-user/Documents/clock_test/initial_try.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/esi-user/Documents/clock_test/initial_try.v|
+!s101 -O0
+!i113 1
+Z4 o-work work -O0
+Z5 tCvgOpt 0
+vtb_initial_try
+!s110 1658471888
+!i10b 1
+!s100 HzGieZff8LF0BmH:RYCUe1
+R1
+IcE^2ClUeCIOI^_zE;>g8`3
+R0
+w1658471852
+8C:/Users/esi-user/Documents/clock_test/tb_initial_try.v
+FC:/Users/esi-user/Documents/clock_test/tb_initial_try.v
+!i122 63
+L0 1 29
+R2
+R3
+r1
+!s85 0
+31
+!s108 1658471888.000000
+!s107 C:/Users/esi-user/Documents/clock_test/tb_initial_try.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/esi-user/Documents/clock_test/tb_initial_try.v|
+!s101 -O0
+!i113 1
+R4
+R5

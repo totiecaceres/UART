@@ -1,0 +1,7 @@
+#Start recording tcl command: 7/22/2022 09:58:35
+#Project Location: C:/Users/esi-user/Documents/clock_test; Project name: clock_check
+prj_project open "C:/Users/esi-user/Documents/clock_test/clock_check.ldf"
+prj_src add "C:/Users/esi-user/Documents/clock_test/initial_try2.v"
+prj_project save
+prj_project close
+#Stop recording: 7/22/2022 12:56:31

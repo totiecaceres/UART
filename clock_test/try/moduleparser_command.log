@@ -1,0 +1,1 @@
+C:/lscc/diamond/3.12/bin/nt64/moduleparser.exe -PROJ try -pf C:/lscc/diamond/3.12/cae_library/synthesis/vhdl/ecp5u.vhd -lib ecp5u -pf C:/lscc/diamond/3.12/cae_library/synthesis/verilog/ecp5u.v -pkg C:/lscc/diamond/3.12/cae_library/vhdl_packages/vdbs -lst C:/Users/esi-user/Documents/clock_test/try/source_files.lst

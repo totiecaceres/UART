@@ -1,0 +1,8 @@
+#Start recording tcl command: 7/21/2022 09:07:06
+#Project Location: C:/Users/esi-user/Documents/clock_test; Project name: clock_check
+prj_project new -name "clock_check" -impl "impl1" -dev LFE5U-45F-8BG381C -synthesis "lse"
+prj_project save
+prj_src add "C:/Users/esi-user/Documents/clock_test/clock_check.v"
+prj_src add "C:/Users/esi-user/Documents/clock_test/asdf/asdf.spf"
+prj_src add "C:/Users/esi-user/Documents/clock_test/initial_try.v"
+#Stop recording: 7/21/2022 09:37:04

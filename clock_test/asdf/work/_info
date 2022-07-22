@@ -1,0 +1,35 @@
+m255
+K4
+z2
+!s11f vlog 2020.3 2020.10, Oct 14 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/esi-user/Documents/clock_test/asdf
+vclock_check
+!s110 1658380161
+!i10b 1
+!s100 h4`HLIzC3ad6oKWb_Cn;n2
+!s11b Dg1SIo80bB@j0V0VzS_@n1
+IlLJ?VY3mYcNHGINA;Q=]_2
+R0
+w1658380128
+8C:/Users/esi-user/Documents/clock_test/clock_check.v
+FC:/Users/esi-user/Documents/clock_test/clock_check.v
+!i122 42
+L0 1 35
+VDg1SIo80bB@j0V0VzS_@n1
+OT;L;2020.3;71
+r1
+!s85 0
+31
+!s108 1658380161.000000
+!s107 C:/Users/esi-user/Documents/clock_test/clock_check.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/esi-user/Documents/clock_test/clock_check.v|
+!s101 -O0
+!i113 1
+o-work work -O0
+tCvgOpt 0

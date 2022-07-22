@@ -1,0 +1,9 @@
+#Start recording tcl command: 7/21/2022 09:37:36
+#Project Location: C:/Users/esi-user/Documents/clock_test; Project name: clock_check
+prj_project open "C:/Users/esi-user/Documents/clock_test/clock_check.ldf"
+prj_src add "C:/Users/esi-user/Documents/clock_test/tb_initial_try.v"
+prj_src remove "C:/Users/esi-user/Documents/clock_test/clock_check.v"
+prj_src add "C:/Users/esi-user/Documents/clock_test/try/try.spf"
+prj_src add "C:/Users/esi-user/Documents/clock_test/mux8_1.v"
+prj_src remove "C:/Users/esi-user/Documents/clock_test/mux8_1.v"
+#Stop recording: 7/21/2022 17:29:39

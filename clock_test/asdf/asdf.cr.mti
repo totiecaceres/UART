@@ -1,0 +1,8 @@
+C:/Users/esi-user/Documents/clock_test/clock_check.v {1 {vlog -work work -stats=none C:/Users/esi-user/Documents/clock_test/clock_check.v
+Model Technology ModelSim - Lattice FPGA Edition vlog 2020.3 Compiler 2020.10 Oct 14 2020
+-- Compiling module clock_check
+
+Top level modules:
+	clock_check
+
+} {} {}}

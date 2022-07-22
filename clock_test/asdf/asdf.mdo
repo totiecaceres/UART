@@ -1,0 +1,15 @@
+if {![file exists "C:/Users/esi-user/Documents/clock_test/asdf/asdf.mpf"]} { 
+	project new "C:/Users/esi-user/Documents/clock_test/asdf" asdf
+	project addfile "C:/Users/esi-user/Documents/clock_test/clock_check.v"
+	vlib  work
+	vdel -lib work -all 
+	vlib work
+	vlog  +incdir+C:/Users/esi-user/Documents/clock_test  -work work  "C:/Users/esi-user/Documents/clock_test/clock_check.v"
+} else {
+	project open "C:/Users/esi-user/Documents/clock_test/asdf/asdf"
+	project compileoutofdate
+}
+vsim -L work -L pmi_work -L ovi_ecp5u  clock_check
+view wave
+add wave /*
+run 1000ns

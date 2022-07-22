@@ -1,0 +1,17 @@
+if {![file exists "C:/Users/esi-user/Documents/clock_test/try/try.mpf"]} { 
+	project new "C:/Users/esi-user/Documents/clock_test/try" try
+	project addfile "C:/Users/esi-user/Documents/clock_test/initial_try.v"
+	project addfile "C:/Users/esi-user/Documents/clock_test/tb_initial_try.v"
+	vlib  work
+	vdel -lib work -all 
+	vlib work
+	vlog  +incdir+C:/Users/esi-user/Documents/clock_test  -work work  "C:/Users/esi-user/Documents/clock_test/initial_try.v"
+	vlog  +incdir+C:/Users/esi-user/Documents/clock_test  -work work  "C:/Users/esi-user/Documents/clock_test/tb_initial_try.v"
+} else {
+	project open "C:/Users/esi-user/Documents/clock_test/try/try"
+	project compileoutofdate
+}
+vsim -L work -L pmi_work -L ovi_ecp5u  tb_initial_try
+view wave
+add wave /*
+run 1000ns
