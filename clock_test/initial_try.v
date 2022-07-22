@@ -24,8 +24,10 @@ module initial_try(clk, nrst, tx, count, bit_count, clk_pulse);
 				count <= 11'b0; end
 			else begin
 				//different condition: if idle/transition state, do not pulse the next start bit.
-				count <= count +11'b1;
-				if(count==11'd1250)begin
+				if(count!=11'd1250)begin
+					count <= count +11'b1;
+				end
+				else begin
 					bit_count <= bit_count + 4'b1;
 						if(bit_count==4'd9)begin
 							bit_count <= 0;
@@ -41,12 +43,9 @@ module initial_try(clk, nrst, tx, count, bit_count, clk_pulse);
 							//
 						end
 					count <= 11'b0;
-					
-				end
-				else begin
-					//tx <= 1; //active high
 				end
 			end
 		end
+	
 					  
 endmodule
