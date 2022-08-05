@@ -3,34 +3,34 @@ module tb_initial_try10;
 	reg nrst;
 	reg rx;
 	wire tx;
-	//wire [9:0] data_store;
+	wire [9:0] data_store;
 	//wire [10:0] count;
-	//wire [7:0] bit_count;
-	//wire [13:0] byte_count;
+	wire [7:0] bit_count;
+	wire [13:0] byte_count;
 	wire busy;
-	//wire idle;
-	//wire done;
-	//wire signal;
-	//wire ready;
-	//wire [4:0] bit_count3;
-	//wire [31:0] data_store2;
+	wire idle;
+	wire done;
+	wire signal;
+	wire ready;
+	wire [7:0] bit_count3;
+	wire [31:0] data_store2;
 	
 	initial_try10 uut(
 		.clk(clk),
 		.nrst(nrst),
 		.rx(rx),
 		.tx(tx),
-		//.data_store(data_store),
+		.data_store(data_store),
 		//.count(count),
-		//.bit_count(bit_count),
-		//.byte_count(byte_count),
-		.busy(busy)
-		//.idle(idle),
-		//.done(done),
-		//.signal(signal),
-		//.ready(ready),
-		//.bit_count3(bit_count3),
-		//.data_store2(data_store2)
+		.bit_count(bit_count),
+		.byte_count(byte_count),
+		.busy(busy),
+		.idle(idle),
+		.done(done),
+		.signal(signal),
+		.ready(ready),
+		.bit_count3(bit_count3),
+		.data_store2(data_store2)
 	);
 	integer i=0, j=0;
 	reg [7:0] data_in;
