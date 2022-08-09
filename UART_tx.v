@@ -1,7 +1,8 @@
-module UART_tx(clk, nrst, tx);
+module UART_tx(clk, nrst, tx, byte_count);
 	input clk;
 	input nrst;
 	output tx;
+	output [1:0] byte_count;
 	
 	parameter freq = 12000000;
 	parameter baud = 9600;
@@ -38,7 +39,7 @@ module UART_tx(clk, nrst, tx);
 	reg tx;
 	reg [3:0] bit_count = 4'd0;  
 	reg [1:0] flag = 2'b0;
-	reg [3:0] byte_count = 3'd0;
+	reg [1:0] byte_count = 2'd0;
 	reg busy = 1'd1;
 	reg [9:0] frame_count = 10'd0;
 	
@@ -78,14 +79,10 @@ module UART_tx(clk, nrst, tx);
 				end
 				
 				case(byte_count)
-					3'b000	: data <= {1'b1,8'h53,1'b0};
-					3'b001	: data <= {1'b1,8'h53,1'b0};
-					3'b010	: data <= {1'b1,8'h6e,1'b0};
-					3'b011	: data <= {1'b1,8'h6e,1'b0};
-					3'b100	: data <= {1'b1,8'h61,1'b0};
-					3'b101	: data <= {1'b1,8'h61,1'b0};
-					3'b110	: data <= {1'b1,8'h70,1'b0};
-					3'b111	: data <= {1'b1,8'h70,1'b0};
+					2'b10	: data <= {1'b1,8'h53,1'b0};
+					2'b01	: data <= {1'b1,8'h6e,1'b0};
+					2'b00	: data <= {1'b1,8'h61,1'b0};
+					2'b11	: data <= {1'b1,8'h70,1'b0};
 					default : data <= {1'b1,8'hff,1'b1};
 				endcase
 			end
@@ -95,7 +92,7 @@ module UART_tx(clk, nrst, tx);
 			end
 			else begin
 				case(flag)
-					2'b00 	: tx <= 1'b1;
+					//2'b00 	: tx <= 1'b1;
 					2'b01	: begin
 							tx <= data[0];	
 							data <= data >> 1 | {data[0],9'd0};
