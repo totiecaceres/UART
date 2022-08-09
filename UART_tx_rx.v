@@ -1,4 +1,4 @@
-module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, byte_count, busy, idle, done, signal, bit_count3, data_store2, flag_bit_count);
+module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, bit_count2, byte_count, busy, busy2, idle, done, signal, bit_count3, data_store2, busy1);
 	input clk;
 	input nrst;
 	input data;
@@ -6,14 +6,16 @@ module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, byte_count,
 	output tx;
 	output [9:0] data_store;
 	output [7:0] bit_count;
+	output [3:0] bit_count2;
 	output [13:0] byte_count;
 	output busy;
+	output busy2;
 	output idle;
 	output done;
 	output signal;
 	output [4:0] bit_count3;
 	output [31:0] data_store2 = 32'b0;
-	output flag_bit_count;
+	output busy1;
 	
 	reg [9:0] data_store = 10'b0;
 	reg [31:0] data_store2 = 32'b0;
@@ -32,9 +34,10 @@ module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, byte_count,
 	reg [13:0] byte_count = 0;
 	reg [3:0] byte_count2 = 0;
 	reg busy = 0;
+	reg busy2 = 0;
 	reg idle = 0;
 	reg tx; 
-	reg flag_bit_count = 0;
+	reg busy1 = 0;
 	reg [1:0] state = 0;
 	reg done = 0;
 	reg signal = 0;
@@ -44,15 +47,7 @@ module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, byte_count,
 	reg [3:0] bit_count2 = 4'b0000;
 	reg [10:0] count3 = 11'd0;
 	reg [4:0] bit_count3 = 5'b00000;
-/////////////////////////////////////////////////////////////////////////////////////////////////
-	always @(negedge ready or negedge nrst)begin
-		if(!nrst)begin
-			signal <= 0;
-		end
-		else begin
-			signal <= ~signal;
-		end
-	end
+	
 /////////////////////////////////////////////////////////////////////////////////////////////////	
 	always@(negedge signal or negedge nrst)begin
 		if(!nrst || busy)begin
@@ -60,8 +55,8 @@ module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, byte_count,
 		end
 		else begin
 			if(byte_count==byte_size-1)begin
-				busy <= ~busy; /////////////////////////////////////////////////////////////////////////////////////////////////
 				byte_count <= 0;
+				busy1 <= ~busy1;
 			end
 			else begin
 				byte_count <= byte_count + 1;
@@ -86,12 +81,16 @@ module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, byte_count,
 /////////////////////////////////////////////////////////////////////////////////////////////////
 	always @(posedge clk or negedge nrst)
 		begin
+			busy <= busy1 ^ busy2;
 			/////////////////////////////////////////////////////////////////////////////////////////////////
 			if(!nrst || busy)begin
 				count <= 11'b0;
+				bit_count <= 0;
 				bit_count2 <= 0;
+				data_store <= 10'b1111111111;
 			end
 			else begin
+				/////////////////////////////////////////////////////////////////////////////////////////////////
 				if(signal==1)begin
 					if(count2!=lim-1)begin
 						count2 <= count2 + 11'b1;
@@ -100,7 +99,7 @@ module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, byte_count,
 						count2 <= 11'b0;
 						if(bit_count2==4'd8)begin
 							bit_count2 <= 0;
-							signal <= 0;
+							signal <= ~signal;
 						end
 						else begin
 							bit_count2 <= bit_count2 +1;
@@ -111,14 +110,7 @@ module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, byte_count,
 					count <= 11'b0;
 					bit_count2 <= 0;
 				end
-			end
-			/////////////////////////////////////////////////////////////////////////////////////////////////
-			if(!nrst || busy)begin
-				bit_count <= 0;
-				count <= 11'b0;
-				data_store <= 10'b1111111111;
-			end
-			else begin
+				/////////////////////////////////////////////////////////////////////////////////////////////////
 				if(count!=lim-1)begin
 					count <= count +11'b1;
 				end
@@ -127,11 +119,10 @@ module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, byte_count,
 					data_store <= data_store << 1 | {10'b0000000000, data};
 					if(bit_count==8)begin
 						data_store2 <= data_store2 << 8 | {24'd0,data_store[7:0]}; 
-						flag_bit_count <= ~flag_bit_count;
 					end
 					if(ready)begin
 						bit_count <= 0;
-						flag_bit_count <= ~flag_bit_count;
+						signal <= ~signal;
 					end
 					else begin
 						bit_count <= bit_count + 1;
@@ -145,7 +136,7 @@ module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, byte_count,
 				tx <= 1;
 			end
 			else if(byte_count2==byte_size)begin
-				busy <= ~busy; /////////////////////////////////////////////////////////////////////////////////////////////////
+				busy2 <= ~busy2;
 				bit_count3 <= 0;
 				count3 <= 11'b0;
 				byte_count2 <= 0;
@@ -180,6 +171,3 @@ module UART_tx_rx(clk, nrst, data, ready, tx, data_store, bit_count, byte_count,
 		end
 		/////////////////////////////////////////////////////////////////////////////////////////////////
 endmodule
-
-
-

@@ -6,15 +6,17 @@ module tb_UART_tx_rx;
 	wire [9:0] data_store;
 	//wire [10:0] count;
 	wire [7:0] bit_count;
+	wire [3:0] bit_count2;
 	wire [13:0] byte_count;
 	wire busy;
+	wire busy2;
 	wire idle;
 	wire done;
 	wire signal;
 	wire ready;
 	wire [4:0] bit_count3;
 	wire [31:0] data_store2;
-	wire flag_bit_count;
+	wire busy1;
 	
 	UART_tx_rx uut(
 		.clk(clk),
@@ -24,15 +26,17 @@ module tb_UART_tx_rx;
 		.data_store(data_store),
 		//.count(count),
 		.bit_count(bit_count),
+		.bit_count2(bit_count2),
 		.byte_count(byte_count),
 		.busy(busy),
+		.busy2(busy2),
 		.idle(idle),
 		.done(done),
 		.signal(signal),
 		.ready(ready),
 		.bit_count3(bit_count3),
 		.data_store2(data_store2),
-		.flag_bit_count(flag_bit_count)
+		.busy1(busy1)
 	);
 	integer i=0, j=0;
 	reg [7:0] data_in;
