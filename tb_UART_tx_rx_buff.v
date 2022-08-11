@@ -35,70 +35,151 @@ module tb_UART_tx_rx_buff;
 	integer i=0, j=0;
 	reg [7:0] data_in;
 	always
-		#4167 assign clk = ~clk; // 12Mhz --> 83.33ns per full cyc --> 41.666ns per half period
-		
-	initial begin
-		clk = 0;
-		nrst = 0;
-		data_in = 8'hff;
-		#2154335;
-		nrst = 1;
-		
-		if(!busy || !nrst)begin
-			rx= 1;
+		#4167 clk = ~clk; // 12Mhz --> 83.33ns per full cyc --> 41.666ns per half period
+	
+	always @(!busy or nrst)
+		if(!nrst)begin
+			rx = 1;
 		end
 		else begin
+			#10417500;
+			#10417500;
+			#10417500;
+			#10417500;
+			#1041750;
 			for(i=0; i<480; i=i+1)begin				//480 is half of 960 ->> 10% of baud.
-				assign data_in = $urandom%255;
-				for(j=0; j<10; j=j+1)begin
-					if(j==10)begin
-						if(i==1)begin
-							assign rx= 1;
-							#10417500;
-							#10417500;
-							#10417500;
+				if(!busy)begin
+					assign data_in = $urandom%254;
+					for(j=0; j<10; j=j+1)begin
+						if(j==10)begin
+							if(i==3)begin
+								assign rx = 1;
+								#10417500;
+							end
+							else if(i==1)begin
+								assign rx = 1;
+								#10417500;
+								#10417500;
+								#10417500;
+							end
+							else begin
+								assign rx = 1;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+							end
 						end
-						else if(i==2) begin
-							assign rx= 1;
-							#99999999999;
-							//#10417500000;
+						else if(j==0)begin
+							assign rx = 0;
+							#10417500;							
+						end
+						else if(j==9)begin
+							if(i==3)begin
+								assign rx = 1;
+								#10417500;
+							end
+							else if(i==1)begin
+								assign rx = 1;
+								#10417500;
+								#10417500;
+								#10417500;
+							end
+							else begin
+								assign rx = 1;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+							end
 						end
 						else begin
-							assign rx= 1;
-							#10417500;
+							assign rx = data_in[j-1];
+							#10417500;							//104 us = 1/9600
 						end
 					end
-					else if(j==0)begin
-						assign rx= 0;
-						#10417500;							
-					end
-					else if(j==9)begin
-						if(i==1)begin
-							assign rx= 1;
-							#10417500;
-							#10417500;
-							#10417500;
-						end
-						else if(i==2) begin
-							assign rx= 1;
-							#99999999999;
-							//#10417500000;
-						end
-						else begin
-							assign rx= 1;
-							#10417500;
-						end
-					end
-					else begin
-						assign rx= data_in[j-1];
-						#10417500;							//104 us = 1/9600
-					end
+					#104175000;
+					
 				end
-				#10417500000;
+				
+				else begin
+					assign data_in = 10'd255;
+					for(j=0; j<10; j=j+1)begin
+						if(j==0)begin
+							assign rx = 1;
+							if(i>100)begin
+								assign rx = 1;
+								#10417500;
+								#10417500;
+								#10417500;
+								#10417500;
+							end
+							#10417500;							
+
+						end
+						else if(j==9)begin
+							assign rx = 1;
+							#10417500;							
+
+						end
+						else begin
+							assign rx = data_in[j-1];
+							#10417500;							//104 us = 1/9600
+
+						end
+					end
+					#104175000;
 				end
 			end
 		end
 		
-		
+	initial begin
+		clk = 0;
+		nrst = 0;
+		rx = 1;
+		data_in = 8'hff;
+		#2154335;
+		nrst = 1;
 	end
+	
 endmodule

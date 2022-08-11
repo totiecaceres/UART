@@ -1,24 +1,24 @@
-//module UART_tx_rx(clk, nrst, rx, tx, rx2, tx2);
-module UART_tx_rx_buff(clk, nrst, rx, tx, ready, data_store, bit_count, bit_count2, byte_count, busy, busy2, idle, bit_count3, data_store2, busy1);
+module UART_tx_rx(clk, nrst, rx, tx, rx2, tx2);
+//module UART_tx_rx_buff(clk, nrst, rx, tx, ready, data_store, bit_count, bit_count2, byte_count, busy, busy2, idle, bit_count3, data_store2, busy1);
 	input clk;
 	input nrst;
 	input rx;
 	output tx;
-	//output rx2;
-	//output tx2;
-	output ready;
-	output [9:0] data_store;
-	output [3:0] bit_count;
-	output [3:0] bit_count2;
-	output [3:0] byte_count;
-	output busy;
-	output busy2;
-	output idle;
-	output [4:0] bit_count3;
-	output [31:0] data_store2 = 32'b0;
-	output busy1;
-	//assign rx2 = rx;
-	//assign tx2 = tx;
+	output rx2;
+	output tx2;
+	//output ready;
+	//output [9:0] data_store;
+	//output [3:0] bit_count;
+	//output [3:0] bit_count2;
+	//output [3:0] byte_count;
+	//output busy;
+	//output busy2;
+	//output idle;
+	//output [4:0] bit_count3;
+	//output [31:0] data_store2 = 32'b0;
+	//output busy1;
+	assign rx2 = rx;
+	assign tx2 = tx;
 	parameter baud = 9600; //1/9600 = 104.1667 us
 	parameter freq = 12000000; //clock speed f=1/s, 83.333ns
 	parameter lim = (freq/baud);
@@ -42,6 +42,7 @@ module UART_tx_rx_buff(clk, nrst, rx, tx, ready, data_store, bit_count, bit_coun
 	reg ready=0;
 	reg tx_read=1;
 	reg tx; 
+	parameter i=0;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	always @(posedge clk or negedge nrst)
 		begin
@@ -73,7 +74,7 @@ module UART_tx_rx_buff(clk, nrst, rx, tx, ready, data_store, bit_count, bit_coun
 					end
 					else begin
 						count2 <= 11'b0;
-						if(bit_count2==4'd8)begin
+						if(bit_count2==4'd8)begin /// it means the 8-bit data already stored... idle signal ends 
 							bit_count2 <= 0;
 							idle <= ~idle;
 						end
@@ -92,20 +93,23 @@ module UART_tx_rx_buff(clk, nrst, rx, tx, ready, data_store, bit_count, bit_coun
 				end
 				else begin
 					count <= 11'b0;
-					data_store <= data_store << 1 | {9'b000000000, rx};
-					if(bit_count==8)begin
-						data_store2 <= data_store2 << 8 | {24'd0,data_store[7:0]}; 
-					end
-					if(ready)begin
-						bit_count <= 0;
-						idle <= ~idle;
+					data_store <= data_store << 1 | {9'b000000000, rx}; 			///keep storeing...
+					if(bit_count==8)begin											///save to data_store 2....
+						data_store2 <= data_store2 >> 8 | {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],24'd0}; 
 					end
 					else begin
-						if(bit_count!=15)begin
+						data_store2 <= data_store2;
+					end
+					if(ready)begin 		///// no data entering....
+						bit_count <= 0;
+						idle <= ~idle;		///// idle signal will start..
+					end
+					else begin
+						if(bit_count!=15)begin     //just to limit the counter if no start bit detected...
 							bit_count <= bit_count + 1;
 						end
 						else begin
-							bit_count <= bit_count;
+							bit_count <= bit_count; // stop counting when no start bit detected...
 						end
 					end
 				end
@@ -133,10 +137,11 @@ module UART_tx_rx_buff(clk, nrst, rx, tx, ready, data_store, bit_count, bit_coun
 						if(bit_count3<=8)begin
 							if(bit_count3==0)begin
 								tx<=0;
+								//data_store2 <= 32'hffff;
 							end
 							else begin
-								tx <= data_store2[31]; ////////////////////////////////////////////////// 2b. ACTUAL TRANSMISSION
-								data_store2 <= data_store2 << 1 | 32'd1;
+								tx <= data_store2[0]; ////////////////////////////////////////////////// 2b. ACTUAL TRANSMISSION
+								data_store2 <= data_store2 >> 1;
 							end
 						end
 						else begin
@@ -157,9 +162,9 @@ module UART_tx_rx_buff(clk, nrst, rx, tx, ready, data_store, bit_count, bit_coun
 			byte_count <= 0;
 		end
 		else begin
-			if(byte_count==byte_size-1)begin
+			if(byte_count==byte_size-1)begin 
 				byte_count <= 0;
-				busy1 <= ~busy1;
+				busy1 <= ~busy1;				//////////////////// to stop the transmission...
 			end
 			else begin
 				byte_count <= byte_count + 1;
