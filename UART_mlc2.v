@@ -1,9 +1,10 @@
-module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
+module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_ch2, trigout_ch3, vctrout_ch0);
 //module UART_tx_rx_buff_baud5(clk, nrst, baud, rx, tx, txD, data_store, data_store3, ready, trigout_ch0, trigout_ch1, trigout_ch2, trigout_ch3, vctrout_ch0, vctrout_ch1, vctrout_ch2, vctrout_ch3, busy, trig_en, h53, h5C, hA5, h00, idle, t_ind, byte_count, bit_count);
 	input clk;
 	input nrst;
 	//input [1:0] baud;
 	input rx;
+	output rx2;
 	output tx;
 	output txD;
 	//output [9:0] data_store;
@@ -11,10 +12,10 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 	//output ready;
 //	output rx2;
 //	output txD;
-	output [7:0] trigout_ch0;
-	//output [7:0] trigout_ch1;
-	//output [7:0] trigout_ch2;
-	//output [7:0] trigout_ch3;
+	output trigout_ch0;
+	output trigout_ch1;
+	output trigout_ch2;
+	output trigout_ch3;
 	output [7:0] vctrout_ch0;
 	//output [7:0] vctrout_ch1;
 	//output [7:0] vctrout_ch2;
@@ -46,14 +47,19 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 	reg [19:0] count = 20'd0; //clk_div
 	reg [19:0] count2 = 20'd0;
 	reg [19:0] count3 = 11'd0;
+	reg [19:0] count4 = 11'd0;
 	reg [9:0] bit_count = 10'd0;
 	reg [3:0] bit_count2 = 4'b0000;
 	reg [4:0] bit_count3 = 5'b00000;
+	reg [4:0] bit_count4 = 5'b00000;
 	reg [4:0] byte_count = 5'd0;
 	reg [4:0] byte_count2 = 5'd0;
+	reg [7:0] byte_count4 = 8'd0;
 	reg [9:0] data_store = 10'b0;
+	reg [9:0] data_store0 = 10'b0;
 	reg [31:0] data_store2[5:0];
 	reg [31:0] data_store3 = 32'hffffffff;
+	wire busy;
 	reg busy1 = 0;
 	reg busy2 = 0;
 	reg idle = 0;
@@ -62,25 +68,33 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 	reg txD; 
 	parameter i=0;
 	reg [19:0] lim = 20'd1250;
-	reg [9:0] lim2 = 10'd970;
+	reg [9:0] lim2 = 10'd25;
 	reg [7:0] vctrout_ch0 = 8'd0;
 	reg [7:0] vctrout_ch1 = 8'd0;
 	reg [7:0] vctrout_ch2 = 8'd0;
 	reg [7:0] vctrout_ch3 = 8'd0;
-	reg [7:0] trigout_ch0 = 0;
-	reg [7:0] trigout_ch1 = 0;
-	reg [7:0] trigout_ch2 = 0;
-	reg [7:0] trigout_ch3 = 0;
-	reg trig_en = 1'b0;
+	reg trigout_ch0 = 1'b0;
+	reg trigout_ch1 = 1'b0;
+	reg trigout_ch2 = 1'b0;
+	reg trigout_ch3 = 1'b0;
+	reg trig_en0 = 1'b0;
+	reg trig_en1 = 1'b0;
+	reg trig_en2 = 1'b0;
+	reg trig_en3 = 1'b0;
 	reg vct_en = 1'b0;
 	reg h53 = 1'b0;
 	reg h5C = 1'b0;
+	reg h5C_en0 = 1'b0;
+	reg h5C_en1 = 1'b0;
+	reg h5C_en2 = 1'b0;
+	reg h5C_en3 = 1'b0;
 	reg hA5 = 1'b0;
 	reg h00 = 1'b0;
 	reg [2:0] t_ind = 3'd0;
 	reg [2:0] v_ind = 3'd0;
 	reg [1:0] trig_type = 2'b11;
-	reg start_ok = 1'b1;
+	reg [7:0] trig_val = 8'd0;
+	reg trigout_end = 1'b0;
 
 	//always@(*) begin
 		//if(baud==2'b00)begin			//baud 110  --> 1/110 = 9090.9091 us
@@ -114,10 +128,17 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 				bit_count <= 10'd0;
 				bit_count2 <= 4'd0;
 				data_store <= 10'b1111111111;
+				data_store0 <= 10'b1111111111;
+				if(!nrst)begin
+					trig_val <= 8'd0;
+				end
+				else begin
+					trig_val <= trig_val;
+				end
 			end
 			else begin
 				////////////////////////////////////////////////////////////////////////////////////////////// 1a. START BIT DETECTOR..
-				if(data_store==10'b11111111111 &&  !rx)begin
+				if(data_store0==10'b1111111111 &&  !rx)begin
 					ready <= 1'b1;
 				end
 				else begin
@@ -151,53 +172,9 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 				else begin
 					count <= 20'b0;
 					data_store <= data_store << 1 | {9'b000000000, rx}; 			///keep storeing...
+					data_store0 <= data_store0 << 1 | {9'b000000000, rx};
 					
-					if(h53==1'b1)begin
-						if(t_ind==3'd1 && byte_count==5'd4 && trig_type!=2'b00)begin
-							 if(bit_count==10'd8)begin
-								trigout_ch0 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
-								trig_en <= ~trig_en;
-							 end
-							 else begin
-								trigout_ch0 <= trigout_ch0;
-							 end
-						end
-						else if(t_ind==3'd2 && byte_count==5'd4 && trig_type!=2'b00)begin
-							 if(bit_count==10'd8)begin
-								trigout_ch1 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
-								trig_en <= ~trig_en;
-							 end
-							 else begin
-								trigout_ch1 <= trigout_ch1;
-							 end
-						end
-						else if(t_ind==3'd3 && byte_count==5'd4 && trig_type!=2'b00)begin
-							 if(bit_count==10'd8)begin
-								trigout_ch2 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
-								trig_en <= ~trig_en;
-							 end
-							 else begin
-								trigout_ch2 <= trigout_ch2;
-							 end
-						end
-						else if(t_ind==3'd4 && byte_count==5'd4 && trig_type!=2'b00)begin
-							 if(bit_count==10'd8)begin
-								trigout_ch3 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
-								trig_en <= ~trig_en;
-							 end
-							 else begin
-								trigout_ch3 <= trigout_ch3;
-							 end
-						end
-						else begin
-							 trigout_ch0 <= trigout_ch0;
-							 trigout_ch1 <= trigout_ch1;
-							 trigout_ch2 <= trigout_ch2;
-							 trigout_ch3 <= trigout_ch3;
-						end
-					end
-					
-					else if(hA5==1'b1)begin
+					if(hA5==1'b1)begin
 						if(v_ind==3'd1 && byte_count==5'd3)begin
 							 if(bit_count==10'd8)begin
 								vctrout_ch0 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
@@ -242,10 +219,6 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 						end
 					end
 					else begin
-						 trigout_ch0 <= trigout_ch0;
-						 trigout_ch1 <= trigout_ch1;
-						 trigout_ch2 <= trigout_ch2;
-						 trigout_ch3 <= trigout_ch3;
 						 vctrout_ch0 <= vctrout_ch0;
 						 vctrout_ch1 <= vctrout_ch1;
 						 vctrout_ch2 <= vctrout_ch2;
@@ -255,6 +228,7 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 					
 					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					if(bit_count==10'd8)begin											///save to data_store 2.... 
+						data_store0 <= 10'b1111111111;
 						if(byte_count==5'd1)begin
 							data_store2[0] <= {24'd0,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
 							if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h53)begin
@@ -263,7 +237,6 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 								h00 <= 1'b0;
 								hA5 <= 1'b0;
 								data_store3 <= {24'hffffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
-								start_ok <= 1'b1;
 							end
 							else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h5c)begin
 								h5C <= 1'b1;
@@ -271,7 +244,6 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 								h00 <= 1'b0;
 								hA5 <= 1'b0;
 								data_store3 <= {24'hffffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
-								start_ok <= 1'b1;
 							end
 							else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h00)begin
 								h00 <= 1'b1;
@@ -279,7 +251,6 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 								h53 <= 1'b0;
 								h5C <= 1'b0;
 								data_store3 <= {24'hffffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
-								start_ok <= 1'b1;
 							end
 							else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'hA5)begin
 								h00 <= 1'b0;
@@ -287,7 +258,6 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 								h53 <= 1'b0;
 								h5C <= 1'b0;
 								data_store3 <= {24'hffffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
-								start_ok <= 1'b1;
 							end
 							else begin
 								h00 <= 1'b0;
@@ -295,168 +265,181 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 								h53 <= 1'b0;
 								h5C <= 1'b0;
 								data_store3 <= 32'hffffffff;
-								start_ok <= 1'b0;
 							end
 						end
 						else if(byte_count==5'd2)begin ////////////////////////////////////////////////////////////////////////////////////////////////
 							data_store2[0] <= {16'd0,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							if(h5C==1'b1)begin
 							     if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h00)begin
-										trig_en <= 1'b0;
+										h5C_en0 <= 1'b1;
+										h5C_en1 <= 1'b0;
+										h5C_en2 <= 1'b0;
+										h5C_en3 <= 1'b0;
+										//trig_en0 <= 1'b0;
 										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										//start_ok <= 1'b1;
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h01)begin
-										trig_en <= 1'b0;
+										h5C_en0 <= 1'b0;
+										h5C_en1 <= 1'b1;
+										h5C_en2 <= 1'b0;
+										h5C_en3 <= 1'b0;
+										//trig_en1 <= 1'b0;
 										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										//start_ok <= 1'b1;
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h02)begin
-										trig_en <= 1'b0;
+										h5C_en0 <= 1'b0;
+										h5C_en1 <= 1'b0;
+										h5C_en2 <= 1'b1;
+										h5C_en3 <= 1'b0;
+										//trig_en2 <= 1'b0;
 										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										//start_ok <= 1'b1;
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h03)begin
-										trig_en <= 1'b0;
+										h5C_en0 <= 1'b0;
+										h5C_en1 <= 1'b0;
+										h5C_en2 <= 1'b0;
+										h5C_en3 <= 1'b1;
+										//trig_en3 <= 1'b0;
 										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										//start_ok <= 1'b1;
 							     end
 							     else begin
-										trig_en <= 1'b0;
+										h5C_en0 <= 1'b0;
+										h5C_en1 <= 1'b0;
+										h5C_en2 <= 1'b0;
+										h5C_en3 <= 1'b0;
+										//trig_en0 <= 1'b0;
+										//trig_en1 <= 1'b0;
+										//trig_en2 <= 1'b0;
+										//trig_en3 <= 1'b0;
 										data_store3 <= {24'hffffff,data_store3[7:0]};
-										//start_ok <= 1'b1;
 							     end
 						    end
 							else if(h53==1'b1)begin
 							     if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h00)begin
 							        t_ind <= 3'd1;
-										trig_en <= 1'b1;
-										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
+									trig_en0 <= 1'b1;
+									trig_en1 <= 1'b0;
+									trig_en2 <= 1'b0;
+									trig_en3 <= 1'b0;
+									data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h01)begin
 							        t_ind <= 3'd2;
-										trig_en <= 1'b1;
-										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
+									trig_en0 <= 1'b0;
+									trig_en1 <= 1'b1;
+									trig_en2 <= 1'b0;
+									trig_en3 <= 1'b0;
+									data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h02)begin
 							        t_ind <= 3'd3;
-										trig_en <= 1'b1;
-										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
+									trig_en0 <= 1'b0;
+									trig_en1 <= 1'b0;
+									trig_en2 <= 1'b1;
+									trig_en3 <= 1'b0;
+									data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h03)begin
 							        t_ind <= 3'd4;
-										trig_en <= 1'b1;
-										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
+									trig_en0 <= 1'b0;
+									trig_en1 <= 1'b0;
+									trig_en2 <= 1'b0;
+									trig_en3 <= 1'b1;
+									data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else begin
 							        t_ind <= 3'd0;
-									trig_en <= 1'b0;
+									trig_en0 <= 1'b0;
+									trig_en1 <= 1'b0;
+									trig_en2 <= 1'b0;
+									trig_en3 <= 1'b0;
 									data_store3 <= {24'hffffff,data_store3[7:0]};
-									start_ok <= 1'b1;
 							     end
 						    end
 							else if(h00==1'b1)begin
 							     if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h00)begin
 										data_store3 <= {8'hff,vctrout_ch0[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
 										v_ind <= 3'd1;
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h01)begin
 										data_store3 <= {8'hff,vctrout_ch1[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
 										v_ind <= 3'd2;
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h02)begin
 										data_store3 <= {8'hff,vctrout_ch2[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
 										v_ind <= 3'd3;
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h03)begin
 										data_store3 <= {8'hff,vctrout_ch3[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
 										v_ind <= 3'd4;
 							     end
 							     else begin
 										v_ind <= 3'd0;
-										data_store3 <= {16'hffff,data_store3[7:0]};
-										start_ok <= 1'b1;
+										data_store3 <= {24'hffffff,data_store3[7:0]};
 							     end
 						    end
 							else if(hA5==1'b1)begin
 							     if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h00)begin
 							         v_ind <= 3'd1;
-										vct_en <= 1'd1;
-										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
+									vct_en <= 1'd1;
+									data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h01)begin
 							        v_ind <= 3'd2;
-										vct_en <= 1'd1;
-										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
+									vct_en <= 1'd1;
+									data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h02)begin
 							        v_ind <= 3'd3;
-										vct_en <= 1'd1;
-										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
+									vct_en <= 1'd1;
+									data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h03)begin
 							        v_ind <= 3'd4;
-										vct_en <= 1'd1;
-										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
-										start_ok <= 1'b1;
+									vct_en <= 1'd1;
+									data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else begin
 							        v_ind <= 3'd0;
 									vct_en <= 1'd0;
 									data_store3 <= {24'hffffff,data_store3[7:0]};
-									start_ok <= 1'b1;
 							     end
 						    end
 							else begin
 								v_ind <= 3'd0;
 								t_ind <= 3'd0;
-								trig_en <= 1'b0;
+								trig_en0 <= 1'b0;
+								trig_en1 <= 1'b0;
+								trig_en2 <= 1'b0;
+								trig_en3 <= 1'b0;
 								vct_en <= 1'd0;
 								data_store3 <= {24'hffffff,data_store3[7:0]};
-								start_ok <= 1'b1;
 							end
 						end
 						else if(byte_count==5'd3)begin ////////////////////////////////////////////////////////////////////////////////////////////////
 							data_store2[0] <= {8'd0,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store2[0][15:0]};
 							if(h53==1'b1)begin
-								//if(trig_en==1'b1)begin
-								if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h00)begin
-									trig_type <= 2'b00;
-									data_store3 <= {8'hff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[15:0]};
-									start_ok <= 1'b1;
-								end
-								else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h01)begin
-									trig_type <= 2'b01;
-									data_store3 <= {8'hff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[15:0]};
-									start_ok <= 1'b1;
-								end
-								else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h02)begin
-									trig_type <= 2'b10;
-									data_store3 <= {8'hff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[15:0]};
-									start_ok <= 1'b1;
+								if(trig_en0 || trig_en1 || trig_en2 || trig_en3)begin
+									if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h00)begin
+										trig_type <= 2'b00;
+										data_store3 <= {8'hff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[15:0]};
+									end
+									else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h01)begin
+										trig_type <= 2'b01;
+										data_store3 <= {8'hff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[15:0]};
+									end
+									else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h02)begin
+										trig_type <= 2'b10;
+										data_store3 <= {8'hff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[15:0]};
+									end
+									else begin
+										trig_type <= 2'b11;
+										data_store3 <= {16'hffff,data_store3[15:0]};
+									end
 								end
 								else begin
-									trig_type <= 2'b11;
-									data_store3 <= {8'hff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[15:0]};
-									start_ok <= 1'b1;
+									data_store3 <= {16'hffff,data_store3[15:0]};
 								end
-								//end
-								//else begin
-									//trig_type <= 2'b11;
-									//data_store3 <= 32'hffffffff;
-									//start_ok <= 1'b1;
-								//end
 							end
 							else if(h5C==1'b1)begin
 								data_store3 <= {8'hff,8'hff,data_store3[15:0]};
@@ -464,7 +447,6 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 							
 							else if(hA5==1'b1)begin
 								data_store3 <= {8'hff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store2[0][15:0]};
-								start_ok <= 1'b1;
 							end
 							else if(h00==1'b1)begin
 								if(v_ind==3'd1)begin
@@ -482,40 +464,51 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 								else begin
 									data_store3 <= {16'hffff,data_store3[15:0]};
 								end
-								start_ok <= 1'b1;
 							end
 							else begin
 								trig_type <= 2'b11;
 								data_store3 <= 32'hffffffff;
-								start_ok <= 1'b1;
 							end
 						end
 						else if(byte_count==5'd4)begin ////////////////////////////////////////////////////////////////////////////////////////////////////////
 							data_store2[0] <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store2[0][23:0]};
 							if(h53==1'b1)begin
-								if(trig_type==2'b01 || trig_type==2'b10 || trig_type==2'b10 && h53==1'b1)begin
-									start_ok <= 1'b1;
-									data_store3 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[23:0]};
-									trig_type <= 2'b11;
-								end
-								else begin
+								if((trig_type==2'b01 || trig_type==2'b10 || trig_type==2'b10) && (trig_en0 ||trig_en1 || trig_en2 ||trig_en3))begin
 									data_store3 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[23:0]};
 									trig_type <= trig_type;
-									start_ok <= 1'b1;
+									if(trigout_end!=1'b0)begin
+										trig_val <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
+										trigout_end <= 1'b0;
+									end
+									else begin
+										trig_val <= trig_val;
+									end
+								end
+								else begin
+									data_store3 <= {8'hff,data_store3[23:0]};
+									trig_type <= 2'b11;
+									trig_val <= trig_val;
 								end
 							end
 							else if(hA5==1'b1)begin
-								start_ok <= 1'b1;
 								data_store3 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[23:0]};
+								trig_val <= trig_val;
+								trig_type <= 2'b11;
 							end
 							else if(h5C==1'b1)begin
 								data_store3 <= {8'hff,data_store3[23:0]};
+								trig_val <= trig_val;
+								trig_type <= 2'b11;
 							end
 							else if(h00==1'b1)begin
 								data_store3 <= {8'hff,data_store3[23:0]};
+								trig_val <= trig_val;
+								trig_type <= 2'b11;
 							end
 							else begin
 								data_store3 <= 32'hffffffff;
+								trig_val <= trig_val;
+								trig_type <= 2'b11;
 							end
 						end
 						else if(byte_count==5'd5)begin
@@ -637,14 +630,24 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 				else begin
 					count3 <= 20'b0;
 					if(bit_count3!=5'd19)begin ////////////////////////////////////////////////////////// 2a. ADD 10-BIT SPACER FOR RX
+						
 						if(bit_count3<=5'd8)begin
 							if(bit_count3==5'd0)begin
 								tx <= 0;
-								if(start_ok==1'b1)begin
-									txD <= 0;
+								if(byte_count2>=4)begin
+									txD <= 1;
+								end
+								else if(h5C==1'b1 && byte_count2>=2)begin
+									txD <= 1;
+								end
+								else if(h00==1'b1 && byte_count2>2)begin
+									txD <= 1;
+								end
+								else if(byte_count==5'd0 &&(h00==1 || hA5==1 || h53==1 || h5C==1))begin
+									txD <= 1;
 								end
 								else begin
-									txD<= 1;
+									txD <= 0;
 								end
 							end
 							else begin
@@ -653,21 +656,6 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 									data_store2[0] <= {1'b0,data_store2[0][31:1]};
 									if(h00==1'b1 && byte_count==5'd2)begin
 										byte_count <= byte_count +1; 
-										if(v_ind==3'd1)begin
-											data_store3 <= {8'hff,vctrout_ch0[7:0],data_store3[15:0]};
-										end
-										else if(v_ind==3'd2)begin
-											data_store3 <= {8'hff,vctrout_ch1[7:0],data_store3[15:0]};
-										end
-										else if(v_ind==3'd3)begin
-											data_store3 <= {8'hff,vctrout_ch2[7:0],data_store3[15:0]};
-										end
-										else if(v_ind==3'd4)begin
-											data_store3 <= {8'hff,vctrout_ch3[7:0],data_store3[15:0]};
-										end
-										else begin
-											data_store3 <= {16'd0,data_store3[15:0]};
-										end
 										txD <= data_store3[0];
 										data_store3 <= {1'b1,data_store3[31:1]};
 									end
@@ -677,35 +665,30 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 									end
 								end
 								else if(byte_count2>5'd3 && byte_count2<=5'd7) begin
-									//start_ok<=1'b0;
 									tx <= data_store2[1][0]; ////////////////////////////////////////////////// 2b. ACTUAL TRANSMISSION
 									data_store2[1] <= {1'b0,data_store2[1][31:1]};
 									txD <= data_store3[0];
 									data_store3 <= {1'b1,data_store3[31:1]};
 								end
 								else if(byte_count2>5'd7 && byte_count2<=5'd11) begin
-									start_ok<=1'b0;
 									tx <= data_store2[2][0]; ////////////////////////////////////////////////// 2b. ACTUAL TRANSMISSION
 									data_store2[2] <= {1'b0,data_store2[2][31:1]};
 									txD <= data_store3[0];
 									data_store3 <= {1'b1,data_store3[31:1]};
 								end
 								else if(byte_count2>5'd11 && byte_count2<=5'd15) begin
-									start_ok<=1'b0;
 									tx <= data_store2[3][0]; ////////////////////////////////////////////////// 2b. ACTUAL TRANSMISSION
 									data_store2[3] <= {1'b0,data_store2[3][31:1]};
 									txD <= data_store3[0];
 									data_store3 <= {1'b1,data_store3[31:1]};
 								end
 								else if(byte_count2>5'd15 && byte_count2<=5'd19) begin
-									start_ok<=1'b0;
 									tx <= data_store2[4][0]; ////////////////////////////////////////////////// 2b. ACTUAL TRANSMISSION
 									data_store2[4] <= {1'b0,data_store2[4][31:1]};
 									txD <= data_store3[0];
 									data_store3 <= {1'b1,data_store3[31:1]};
 								end
 								else begin
-									start_ok<=1'b0;
 									tx <= data_store2[5][0]; ////////////////////////////////////////////////// 2b. ACTUAL TRANSMISSION
 									data_store2[5] <= {1'b0,data_store2[5][31:1]};
 									txD <= data_store3[0];
@@ -717,34 +700,188 @@ module UART_tx_rx_buff_baud5(clk, nrst, rx, tx, txD, trigout_ch0, vctrout_ch0);
 							tx <= 1;
 							txD <= 1;
 						end
+			
 						bit_count3 <= bit_count3 + 5'd1;
 					end
 					else begin
 						bit_count3 <= 5'd0;
 						byte_count2 <= byte_count2 + 5'd1;
-						if(byte_count2>=3)begin
-							start_ok <= 1'b0;
-						end
-						else begin
-							if(h5C==1'b1 && byte_count2>=1)begin
-								start_ok <= 1'b0;
-							end
-							else if(h00==1'b1 && byte_count2>=2)begin
-								start_ok <= 1'b0;
-							end
-							else if(byte_count2==0 && (h00==1'b1 || hA5==1'b1 || h53==1'b1 || h5C==1'b1))begin
-								start_ok <= 1'b0;
-							end
-							else begin
-								start_ok <= start_ok;
-							end
-						end
-						
 					end
 				end
 			end
-		end
-	
+			
+			
+			if(!nrst || (!h5C_en0 && !h5C_en1 && !h5C_en2 && !h5C_en3) || data_store3[31:0]==32'hffffff5c)begin
+				if(!nrst)begin
+					trigout_ch0 <= 0;
+					trigout_ch1 <= 0;
+					trigout_ch2 <= 0;
+					trigout_ch3 <= 0;
+				end
+				else begin
+					trigout_ch0 <= trigout_ch0;
+					trigout_ch1 <= trigout_ch1;
+					trigout_ch2 <= trigout_ch2;
+					trigout_ch3 <= trigout_ch3;
+				end
+				count4 <= 0;
+				bit_count4 <= 0;
+				byte_count4 <= 0;
+				//if(trig_type==2'b10)begin
+					//if(h5C_en0  && trig_en0)begin
+						//trigout_ch0 <= 1'b1;
+					//end
+					//else if(h5C_en1 && trig_en1)begin
+						//trigout_ch1 <= 1'b1;
+					//end
+					//else if(h5C_en2  && trig_en2)begin
+						//trigout_ch2 <= 1'b1;
+					//end
+					//else if(h5C_en3  && trig_en3)begin
+						//trigout_ch3 <= 1'b1;
+					//end
+					//else begin
+						//trigout_ch0 <= trigout_ch0;
+						//trigout_ch1 <= trigout_ch1;
+						//trigout_ch2 <= trigout_ch2;
+						//trigout_ch3 <= trigout_ch3;
+					//end
+				//end
+				//else begin
+					//if(h5C_en0 && trig_en0)begin
+						//trigout_ch0 <= 1'b0;
+					//end
+					//else if(h5C_en1 && trig_en1)begin
+						//trigout_ch1 <= 1'b0;
+					//end
+					//else if(h5C_en2 && trig_en2)begin
+						//trigout_ch2 <= 1'b0;
+					//end
+					//else if(h5C_en3 && trig_en3)begin
+						//trigout_ch3 <= 1'b0;
+					//end
+					//else begin
+						//trigout_ch0 <= trigout_ch0;
+						//trigout_ch1 <= trigout_ch1;
+						//trigout_ch2 <= trigout_ch2;
+						//trigout_ch3 <= trigout_ch3;
+					//end
+				//end
+			end
+			else begin
+				if(count4!=600)begin
+					count4 <= count4 +20'b1;
+				end
+				else begin
+					count4 <= 20'b0;
+					if(bit_count4!=5'd9)begin
+						if(bit_count4<5'd5)begin
+							if(trig_type != 2'b10)begin
+								if(h5C_en0 && trig_en0)begin
+									trigout_ch0 <= 1'b1;
+								end
+								else if(h5C_en1 && trig_en1)begin
+									trigout_ch1 <= 1'b1;
+								end
+								else if(h5C_en2 && trig_en2)begin
+									trigout_ch2 <= 1'b1;
+								end
+								else if(h5C_en3 && trig_en3)begin
+									trigout_ch3 <= 1'b1;
+								end
+								else begin
+									trigout_ch0 <= trigout_ch0;
+									trigout_ch1 <= trigout_ch1;
+									trigout_ch2 <= trigout_ch2;
+									trigout_ch3 <= trigout_ch3;
+								end
+							end
+							else begin
+								if(h5C_en0 && trig_en0)begin
+									trigout_ch0 <= 1'b0;
+								end
+								else if(h5C_en1 && trig_en1)begin
+									trigout_ch1 <= 1'b0;
+								end
+								else if(h5C_en2 && trig_en2)begin
+									trigout_ch2 <= 1'b0;
+								end
+								else if(h5C_en3 && trig_en3)begin
+									trigout_ch3 <= 1'b0;
+								end
+								else begin
+									trigout_ch0 <= trigout_ch0;
+									trigout_ch1 <= trigout_ch1;
+									trigout_ch2 <= trigout_ch2;
+									trigout_ch3 <= trigout_ch3;
+								end
+							end
+						end
+						else begin
+							if(trig_type != 2'b10)begin
+								if(h5C_en0 && trig_en0)begin
+									trigout_ch0 <= 1'b0;
+								end
+								else if(h5C_en1 && trig_en1)begin
+									trigout_ch1 <= 1'b0;
+								end
+								else if(h5C_en2 && trig_en2)begin
+									trigout_ch2 <= 1'b0;
+								end
+								else if(h5C_en3 && trig_en3)begin
+									trigout_ch3 <= 1'b0;
+								end
+								else begin
+									trigout_ch0 <= trigout_ch0;
+									trigout_ch1 <= trigout_ch1;
+									trigout_ch2 <= trigout_ch2;
+									trigout_ch3 <= trigout_ch3;
+								end
+							end
+							else begin
+								if(h5C_en0 && trig_en0)begin
+									trigout_ch0 <= 1'b1;
+								end
+								else if(h5C_en1 && trig_en1)begin
+									trigout_ch1 <= 1'b1;
+								end
+								else if(h5C_en2 && trig_en2)begin
+									trigout_ch2 <= 1'b1;
+								end
+								else if(h5C_en3 && trig_en3)begin
+									trigout_ch3 <= 1'b1;
+								end
+								else begin
+									trigout_ch0 <= trigout_ch0;
+									trigout_ch1 <= trigout_ch1;
+									trigout_ch2 <= trigout_ch2;
+									trigout_ch3 <= trigout_ch3;
+								end
+							end
+						end
+						bit_count4 <= bit_count4 + 1;
+					end
+					else begin
+						if(trig_val != byte_count4)begin
+							byte_count4 <= byte_count4 + 1;
+							bit_count4 <= 0;
+						end
+						else begin
+							byte_count4 <= byte_count4;
+							bit_count4 <= bit_count4;
+							if(h53)begin
+								trigout_end <= 1'b1;
+								byte_count4 <= 0;
+								trig_val <= 0;
+							end
+							else begin
+								trigout_end <= trigout_end;
+							end
+						end
+					end
+				end
+			end
+		end ///
 	assign busy = (busy1 ^ busy2);
 
 	

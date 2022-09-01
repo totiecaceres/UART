@@ -1,4 +1,4 @@
-module tb_UART_tx_rx_buff_baud5;
+module tb_UART_mlc2;
 	reg clk;
 	reg nrst;
 	//reg [1:0] baud;
@@ -10,7 +10,7 @@ module tb_UART_tx_rx_buff_baud5;
 	//wire ready;
 //	wire rx2;
 //	wire txD;
-	wire [7:0] trigout_ch0;
+	wire trigout_ch0;
 	//wire [7:0] trigout_ch1;
 	//wire [7:0] trigout_ch2;
 	//wire [7:0] trigout_ch3;
@@ -29,7 +29,7 @@ module tb_UART_tx_rx_buff_baud5;
 	//wire [4:0] byte_count;
 	//wire [9:0] bit_count;
 	
-	UART_tx_rx_buff_baud5 uut(
+	UART_mlc2 uut(
 		.clk(clk),
 		.nrst(nrst),
 		//.baud(baud),
@@ -45,11 +45,11 @@ module tb_UART_tx_rx_buff_baud5;
 		//.trigout_ch1(trigout_ch1),
 		//.trigout_ch2(trigout_ch2),
 		//.trigout_ch3(trigout_ch3),
-		.vctrout_ch0(vctrout_ch0),
+		.vctrout_ch0(vctrout_ch0)
 		//.vctrout_ch1(vctrout_ch1),
 		//.vctrout_ch2(vctrout_ch2),
 		//.vctrout_ch3(vctrout_ch3),
-		//.busy(busy),
+		//.busy(busy)
 		//.trig_en(trig_en),
 		//.h53(h53),
 		//.h5C(h5C),
@@ -91,43 +91,23 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
 					#(delay);							//104 us = 1/9600
 				end
 			end
-			//#(delay*10);
-			//end
-			assign data_in = 8'hac;
+			assign data_in = 8'h00;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -142,17 +122,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -167,17 +138,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -186,24 +148,15 @@ module tb_UART_tx_rx_buff_baud5;
 			end
 			#(delay*100);
 			////////////////////////////////////////////////////////////////////////
-			assign data_in = 8'h5C;
+			assign data_in = 8'h53;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -212,6 +165,22 @@ module tb_UART_tx_rx_buff_baud5;
 			end
 			//#(delay*10);
 			//end
+			assign data_in = 8'h00;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			#(delay*10);
 			assign data_in = 8'h01;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
@@ -219,17 +188,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -237,49 +197,15 @@ module tb_UART_tx_rx_buff_baud5;
 				end
 			end
 			
-			assign data_in = 8'h01;
+			assign data_in = 8'hff;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			assign data_in = 8'h01;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -287,6 +213,7 @@ module tb_UART_tx_rx_buff_baud5;
 				end
 			end
 			#(delay*100);
+			#(delay*10);
 			
 			////////////////////////////////////////////////////////////////////////
 			assign data_in = 8'h5C;
@@ -296,25 +223,15 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
 					#(delay);							//104 us = 1/9600
 				end
 			end
-			//#(delay*10);
-			//end
+
 			assign data_in = 8'h02;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
@@ -322,17 +239,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -347,17 +255,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -372,17 +271,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -399,25 +289,14 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
 					#(delay);							//104 us = 1/9600
 				end
 			end
-			//#(delay*10);
-			//end
 			assign data_in = 8'h03;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
@@ -425,17 +304,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -450,17 +320,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -475,17 +336,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -504,43 +356,24 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
 					#(delay);							//104 us = 1/9600
 				end
 			end
-			//#(delay*10);
-			//end
-			assign data_in = 8'h00;
+			assign data_in = 8'h03;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -549,24 +382,15 @@ module tb_UART_tx_rx_buff_baud5;
 			end
 			//#(delay*10);
 			
-			assign data_in = 8'h00;
+			assign data_in = 8'h01;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -575,24 +399,15 @@ module tb_UART_tx_rx_buff_baud5;
 			end
 			
 			
-			assign data_in = 8'haa;
+			assign data_in = 8'h15;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -600,6 +415,71 @@ module tb_UART_tx_rx_buff_baud5;
 				end
 			end
 			#(delay*100);
+			////////////////////////////////////////////////////////////////////////
+		assign data_in = 8'h5c;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+
+			assign data_in = 8'h00;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			//#(delay*10);
+			assign data_in = 8'h02;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			
+			
+			assign data_in = 8'h06;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
 			#(delay*100);
 			////////////////////////////////////////////////////////////////////////
 		assign data_in = 8'h53;
@@ -609,25 +489,14 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
 					#(delay);							//104 us = 1/9600
 				end
 			end
-			//#(delay*10);
-			//end
 			assign data_in = 8'h00;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
@@ -635,17 +504,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -661,17 +521,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -687,17 +538,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -713,17 +555,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -739,17 +572,8 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -760,50 +584,42 @@ module tb_UART_tx_rx_buff_baud5;
 			#(delay*100);
 			
 			////////////////////////////////////////////////////////////////////////
-		assign data_in = 8'h53;
+		assign data_in = 8'h5c;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
 					#(delay);							//104 us = 1/9600
 				end
 			end
-			//#(delay*10);
-			//end
-			assign data_in = 8'h01;
+
+			assign data_in = 8'h00;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -819,17 +635,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -845,23 +663,31 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
 					#(delay);							//104 us = 1/9600
 				end
 			end
+			#(delay*100);
+			#(delay*100);
+			#(delay*100);
+			#(delay*100);
+			#(delay*100);
+			#(delay*100);
 			#(delay*100);
 			#(delay*100);
 			#(delay*100);
@@ -873,17 +699,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -899,17 +727,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -925,17 +755,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -951,17 +783,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -979,17 +813,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1005,17 +841,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1031,17 +869,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1057,17 +897,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1083,17 +925,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1109,17 +953,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1136,17 +982,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1155,24 +1003,26 @@ module tb_UART_tx_rx_buff_baud5;
 			end
 			//#(delay*10);
 			//end
-			assign data_in = 8'h01;
+			assign data_in = 8'h00;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1188,17 +1038,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1214,17 +1066,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1241,17 +1095,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1260,24 +1116,26 @@ module tb_UART_tx_rx_buff_baud5;
 			end
 			//#(delay*10);
 			//end
-			assign data_in = 8'h01;
+			assign data_in = 8'h00;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1292,17 +1150,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1317,17 +1177,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1345,17 +1207,19 @@ module tb_UART_tx_rx_buff_baud5;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1364,24 +1228,110 @@ module tb_UART_tx_rx_buff_baud5;
 			end
 			//#(delay*10);
 			//end
-			assign data_in = 8'h01;
+			assign data_in = 8'h00;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
 					#(delay);						
 				end
 				else if(j==9)begin
-					if((i/3)%2)begin
-						assign rx = 1;
-						#(delay);
-						#(delay);
-						#(delay);
-						#(delay);
-					end
-					else begin
-						assign rx = 1;
-						#(delay*10);
-					end
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			assign data_in = 8'h00;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			
+			#(delay*100);
+			#(delay*100);
+			
+			assign data_in = 8'h00;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			//#(delay*10);
+			//end
+			assign data_in = 8'h00;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+					//if((i/3)%2)begin
+						//assign rx = 1;
+						//#(delay);
+						//#(delay);
+						//#(delay);
+						//#(delay);
+					//end
+					//else begin
+						//assign rx = 1;
+						//#(delay*10);
+					//end
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -1389,6 +1339,7 @@ module tb_UART_tx_rx_buff_baud5;
 				end
 			end
 
+		
 		end
 
 	initial begin
