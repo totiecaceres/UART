@@ -11,9 +11,9 @@ module tb_UART_mlc2;
 //	wire rx2;
 //	wire txD;
 	wire trigout_ch0;
-	//wire [7:0] trigout_ch1;
-	//wire [7:0] trigout_ch2;
-	//wire [7:0] trigout_ch3;
+	wire trigout_ch1;
+	wire trigout_ch2;
+	wire trigout_ch3;
 	wire [7:0] vctrout_ch0;
 	//wire [7:0] vctrout_ch1;
 	//wire [7:0] vctrout_ch2;
@@ -42,9 +42,9 @@ module tb_UART_mlc2;
 //		.rx2(rx2),
 //		.txD(txD),
 		.trigout_ch0(trigout_ch0),
-		//.trigout_ch1(trigout_ch1),
-		//.trigout_ch2(trigout_ch2),
-		//.trigout_ch3(trigout_ch3),
+		.trigout_ch1(trigout_ch1),
+		.trigout_ch2(trigout_ch2),
+		.trigout_ch3(trigout_ch3),
 		.vctrout_ch0(vctrout_ch0)
 		//.vctrout_ch1(vctrout_ch1),
 		//.vctrout_ch2(vctrout_ch2),
@@ -83,70 +83,7 @@ module tb_UART_mlc2;
 			#(delay);
 			#(delay);
 			#(delay/10);
-			//for(i=0; i<baud; i=i+1)begin				//480 is half of 960 ->> 10% of baud.
-			assign data_in = 8'h5C;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			#(delay*100);
+
 			////////////////////////////////////////////////////////////////////////
 			assign data_in = 8'h53;
 			for(j=0; j<10; j=j+1)begin
@@ -197,7 +134,7 @@ module tb_UART_mlc2;
 				end
 			end
 			
-			assign data_in = 8'hff;
+			assign data_in = 8'h03;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
@@ -232,7 +169,7 @@ module tb_UART_mlc2;
 				end
 			end
 
-			assign data_in = 8'h02;
+			assign data_in = 8'h00;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
@@ -248,7 +185,43 @@ module tb_UART_mlc2;
 				end
 			end
 			
-			assign data_in = 8'h02;
+			#(delay*100);
+			#(delay*10);
+			
+			assign data_in = 8'h53;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			//#(delay*10);
+			//end
+			assign data_in = 8'h00;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			#(delay*10);
+			assign data_in = 8'h00;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
@@ -264,7 +237,7 @@ module tb_UART_mlc2;
 				end
 			end
 			
-			assign data_in = 8'h02;
+			assign data_in = 8'h00;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
@@ -280,6 +253,7 @@ module tb_UART_mlc2;
 				end
 			end
 			#(delay*100);
+			#(delay*10);
 			
 			////////////////////////////////////////////////////////////////////////
 			assign data_in = 8'h5C;
@@ -297,83 +271,35 @@ module tb_UART_mlc2;
 					#(delay);							//104 us = 1/9600
 				end
 			end
-			assign data_in = 8'h03;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			assign data_in = 8'h03;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			assign data_in = 8'h03;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			#(delay*100);
-			
-			////////////////////////////////////////////////////////////////////////
-			
-		////////////////////////////////////////////////////////////////////////
-		assign data_in = 8'h53;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			assign data_in = 8'h03;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
 
+			assign data_in = 8'h00;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			
+			#(delay*100);
+			#(delay*10);
+			
+			assign data_in = 8'h53;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
 				end
 				else begin
 					assign rx = data_in[j-1];
@@ -381,8 +307,8 @@ module tb_UART_mlc2;
 				end
 			end
 			//#(delay*10);
-			
-			assign data_in = 8'h01;
+			//end
+			assign data_in = 8'h00;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
@@ -397,7 +323,22 @@ module tb_UART_mlc2;
 					#(delay);							//104 us = 1/9600
 				end
 			end
-			
+			#(delay*10);
+			assign data_in = 8'h02;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
 			
 			assign data_in = 8'h15;
 			for(j=0; j<10; j=j+1)begin
@@ -415,8 +356,10 @@ module tb_UART_mlc2;
 				end
 			end
 			#(delay*100);
+			#(delay*10);
+			
 			////////////////////////////////////////////////////////////////////////
-		assign data_in = 8'h5c;
+			assign data_in = 8'h5C;
 			for(j=0; j<10; j=j+1)begin
 				if(j==0)begin
 					assign rx = 0;
@@ -447,898 +390,7 @@ module tb_UART_mlc2;
 					#(delay);							//104 us = 1/9600
 				end
 			end
-			//#(delay*10);
-			assign data_in = 8'h02;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
 			
-			
-			assign data_in = 8'h06;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			#(delay*100);
-			////////////////////////////////////////////////////////////////////////
-		assign data_in = 8'h53;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			
-			assign data_in = 8'h01;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			
-			assign data_in = 8'h01;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			#(delay*100);
-			
-			////////////////////////////////////////////////////////////////////////
-		assign data_in = 8'h5c;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			
-			assign data_in = 8'h02;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			
-			assign data_in = 8'h02;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			#(delay*100);
-			#(delay*100);
-			#(delay*100);
-			#(delay*100);
-			#(delay*100);
-			#(delay*100);
-			#(delay*100);
-			#(delay*100);
-			#(delay*100);
-			////////////////////////////////////////////////////////////////////////
-		assign data_in = 8'h53;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			//end
-			assign data_in = 8'h03;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			
-			assign data_in = 8'h01;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			
-			assign data_in = 8'hbb;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			#(delay*100);
-			#(delay*100);
-			#(delay*100);
-			////////////////////////////////////////////////////////////////////////
-		assign data_in = 8'h53;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			//end
-			assign data_in = 8'h24;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-
-			assign data_in = 8'h01;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			
-			assign data_in = 8'h01;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			//for(i=0; i<baud; i=i+1)begin				//480 is half of 960 ->> 10% of baud.
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			//end
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			#(delay*100);
-			#(delay*100);
-		////////////////////////////////////////////////////////////////////////
-		assign data_in = 8'hA5;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			//end
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			
-			assign data_in = 8'hCC;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			
-			assign data_in = 8'h02;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			#(delay*100);
-			
-			////////////////////////////////////////////////////////////////////////
-		assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			//end
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			#(delay*100);
-			#(delay*100);
-			
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			//end
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			
-			#(delay*100);
-			#(delay*100);
-			
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-			//#(delay*10);
-			//end
-			assign data_in = 8'h00;
-			for(j=0; j<10; j=j+1)begin
-				if(j==0)begin
-					assign rx = 0;
-					#(delay);						
-				end
-				else if(j==9)begin
-					assign rx = 1;
-					#(delay);
-					//if((i/3)%2)begin
-						//assign rx = 1;
-						//#(delay);
-						//#(delay);
-						//#(delay);
-						//#(delay);
-					//end
-					//else begin
-						//assign rx = 1;
-						//#(delay*10);
-					//end
-				end
-				else begin
-					assign rx = data_in[j-1];
-					#(delay);							//104 us = 1/9600
-				end
-			end
-
 		
 		end
 

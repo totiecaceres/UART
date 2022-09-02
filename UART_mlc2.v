@@ -1,48 +1,16 @@
 module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_ch2, trigout_ch3, vctrout_ch0);
-//module UART_tx_rx_buff_baud5(clk, nrst, baud, rx, tx, txD, data_store, data_store3, ready, trigout_ch0, trigout_ch1, trigout_ch2, trigout_ch3, vctrout_ch0, vctrout_ch1, vctrout_ch2, vctrout_ch3, busy, trig_en, h53, h5C, hA5, h00, idle, t_ind, byte_count, bit_count);
 	input clk;
 	input nrst;
-	//input [1:0] baud;
 	input rx;
 	output rx2;
 	output tx;
 	output txD;
-	//output [9:0] data_store;
-	//output [31:0] data_store3;
-	//output ready;
-//	output rx2;
-//	output txD;
 	output trigout_ch0;
 	output trigout_ch1;
 	output trigout_ch2;
 	output trigout_ch3;
 	output [7:0] vctrout_ch0;
-	//output [7:0] vctrout_ch1;
-	//output [7:0] vctrout_ch2;
-	//output [7:0] vctrout_ch3;
-	//output busy;
-	//output trig_en;
-	//output h53;
-	//output h5C;
-	//output hA5;
-	//output h00;
-	//output idle;
-	//output [2:0] t_ind;
-	//output [4:0] byte_count;
-	//output [9:0] data_store;
-	//output [9:0] bit_count;
-	//output [3:0] bit_count2;
-	//output [3:0] byte_count;
-	//output [3:0] byte_count2;
-	//output busy;
-	//output busy2;
-	//output idle;
-	//output [4:0] bit_count3;
-	//output [31:0] data_store2;
-	//output busy1;
 	assign rx2 = rx;
-	//assign txD = tx;
-	//reg baud = 2'b11;
 	
 	reg [19:0] count = 20'd0; //clk_div
 	reg [19:0] count2 = 20'd0;
@@ -68,7 +36,7 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 	reg txD; 
 	parameter i=0;
 	reg [19:0] lim = 20'd1250;
-	reg [9:0] lim2 = 10'd25;
+	reg [9:0] lim2 = 10'd249; ////////////// 10'd25 for test bench
 	reg [7:0] vctrout_ch0 = 8'd0;
 	reg [7:0] vctrout_ch1 = 8'd0;
 	reg [7:0] vctrout_ch2 = 8'd0;
@@ -92,32 +60,16 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 	reg h00 = 1'b0;
 	reg [2:0] t_ind = 3'd0;
 	reg [2:0] v_ind = 3'd0;
-	reg [1:0] trig_type = 2'b11;
-	reg [7:0] trig_val = 8'd0;
+	reg [1:0] trig_type0 = 2'b11;
+	reg [1:0] trig_type1 = 2'b11;
+	reg [1:0] trig_type2 = 2'b11;
+	reg [1:0] trig_type3 = 2'b11;
+	reg zero_trig_type = 1'b0;
+	reg [7:0] trig_val0 = 8'd0;
+	reg [7:0] trig_val1 = 8'd0;
+	reg [7:0] trig_val2 = 8'd0;
+	reg [7:0] trig_val3 = 8'd0;
 	reg trigout_end = 1'b0;
-
-	//always@(*) begin
-		//if(baud==2'b00)begin			//baud 110  --> 1/110 = 9090.9091 us
-			//lim <= 20'd109091;
-			//lim <= 20'd909091;
-			//lim2 <= 10'd21;
-		//end
-		//else if(baud==2'b01)begin		//baud 600 --> 1/600 = 1666.6667 us
-			//lim <= 20'd20000;
-			//lim <= 20'd166667;
-			//lim2 <= 10'd70;
-		//end
-		//else if(baud==2'b10)begin		//baud 2400 --> 1/2400 = 416.6667 us
-			//lim <= 20'd5000;
-			//lim <= 20'd41667;
-			//lim2 <= 10'd250;
-		//end
-		//else begin				//baud 9600	--> 1/9600 = 104.1667 us
-			//lim <= 20'd1250;
-			//lim <= 20'd10417;
-			//lim2 <= 10'd10;
-		//end
-	//end
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	always @(posedge clk or negedge nrst)
@@ -130,10 +82,16 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 				data_store <= 10'b1111111111;
 				data_store0 <= 10'b1111111111;
 				if(!nrst)begin
-					trig_val <= 8'd0;
+					trig_val0 <= 8'd0;
+					trig_val1 <= 8'd0;
+					trig_val2 <= 8'd0;
+					trig_val3 <= 8'd0;
 				end
 				else begin
-					trig_val <= trig_val;
+					trig_val0 <= trig_val0;
+					trig_val1 <= trig_val1;
+					trig_val2 <= trig_val2;
+					trig_val3 <= trig_val3;
 				end
 			end
 			else begin
@@ -236,6 +194,10 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 								h5C <= 1'b0;
 								h00 <= 1'b0;
 								hA5 <= 1'b0;
+								h5C_en0 <= 1'b0;
+								h5C_en1 <= 1'b0;
+								h5C_en2 <= 1'b0;
+								h5C_en3 <= 1'b0;
 								data_store3 <= {24'hffffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
 							end
 							else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h5c)begin
@@ -250,6 +212,10 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 								hA5 <= 1'b0;
 								h53 <= 1'b0;
 								h5C <= 1'b0;
+								h5C_en0 <= 1'b0;
+								h5C_en1 <= 1'b0;
+								h5C_en2 <= 1'b0;
+								h5C_en3 <= 1'b0;
 								data_store3 <= {24'hffffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
 							end
 							else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'hA5)begin
@@ -257,6 +223,10 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 								hA5 <= 1'b1;
 								h53 <= 1'b0;
 								h5C <= 1'b0;
+								h5C_en0 <= 1'b0;
+								h5C_en1 <= 1'b0;
+								h5C_en2 <= 1'b0;
+								h5C_en3 <= 1'b0;
 								data_store3 <= {24'hffffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
 							end
 							else begin
@@ -264,6 +234,10 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 								hA5 <= 1'b0;
 								h53 <= 1'b0;
 								h5C <= 1'b0;
+								h5C_en0 <= 1'b0;
+								h5C_en1 <= 1'b0;
+								h5C_en2 <= 1'b0;
+								h5C_en3 <= 1'b0;
 								data_store3 <= 32'hffffffff;
 							end
 						end
@@ -275,7 +249,6 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 										h5C_en1 <= 1'b0;
 										h5C_en2 <= 1'b0;
 										h5C_en3 <= 1'b0;
-										//trig_en0 <= 1'b0;
 										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h01)begin
@@ -283,7 +256,6 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 										h5C_en1 <= 1'b1;
 										h5C_en2 <= 1'b0;
 										h5C_en3 <= 1'b0;
-										//trig_en1 <= 1'b0;
 										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h02)begin
@@ -291,7 +263,6 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 										h5C_en1 <= 1'b0;
 										h5C_en2 <= 1'b1;
 										h5C_en3 <= 1'b0;
-										//trig_en2 <= 1'b0;
 										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h03)begin
@@ -299,7 +270,6 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 										h5C_en1 <= 1'b0;
 										h5C_en2 <= 1'b0;
 										h5C_en3 <= 1'b1;
-										//trig_en3 <= 1'b0;
 										data_store3 <= {16'hffff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 							     end
 							     else begin
@@ -307,10 +277,6 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 										h5C_en1 <= 1'b0;
 										h5C_en2 <= 1'b0;
 										h5C_en3 <= 1'b0;
-										//trig_en0 <= 1'b0;
-										//trig_en1 <= 1'b0;
-										//trig_en2 <= 1'b0;
-										//trig_en3 <= 1'b0;
 										data_store3 <= {24'hffffff,data_store3[7:0]};
 							     end
 						    end
@@ -421,19 +387,59 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 							if(h53==1'b1)begin
 								if(trig_en0 || trig_en1 || trig_en2 || trig_en3)begin
 									if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h00)begin
-										trig_type <= 2'b00;
 										data_store3 <= {8'hff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[15:0]};
+										if(trig_en0)begin
+											trig_type0 <= {~trig_type0, ~trig_type0};
+										end
+										else if(trig_en1) begin
+											trig_type1 <= {~trig_type1, ~trig_type1};
+										end
+										else if(trig_en2) begin
+											trig_type2 <= {~trig_type2, ~trig_type2};
+										end
+										else begin
+											trig_type3 <= {~trig_type3, ~trig_type3};
+										end
+										zero_trig_type <= 1'b1;
 									end
 									else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h01)begin
-										trig_type <= 2'b01;
 										data_store3 <= {8'hff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[15:0]};
+										if(trig_en0)begin
+											trig_type0 <= 2'b01;
+										end
+										else if(trig_en1) begin
+											trig_type1 <= 2'b01;
+										end
+										else if(trig_en2) begin
+											trig_type2 <= 2'b01;
+										end
+										else begin
+											trig_type3 <= 2'b01;
+										end
+										zero_trig_type <= 1'b0;
 									end
 									else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h02)begin
-										trig_type <= 2'b10;
 										data_store3 <= {8'hff,data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[15:0]};
+										if(trig_en0)begin
+											trig_type0 <= 2'b10;
+										end
+										else if(trig_en1) begin
+											trig_type1 <= 2'b10;
+										end
+										else if(trig_en2) begin
+											trig_type2 <= 2'b10;
+										end
+										else begin
+											trig_type3 <= 2'b10;
+										end
+										zero_trig_type <= 1'b0;
 									end
 									else begin
-										trig_type <= 2'b11;
+										trig_type0 <= trig_type0;
+										trig_type1 <= trig_type1;
+										trig_type2 <= trig_type2;
+										trig_type3 <= trig_type3;
+										zero_trig_type <= zero_trig_type;
 										data_store3 <= {16'hffff,data_store3[15:0]};
 									end
 								end
@@ -466,49 +472,53 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 								end
 							end
 							else begin
-								trig_type <= 2'b11;
 								data_store3 <= 32'hffffffff;
 							end
 						end
 						else if(byte_count==5'd4)begin ////////////////////////////////////////////////////////////////////////////////////////////////////////
 							data_store2[0] <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store2[0][23:0]};
 							if(h53==1'b1)begin
-								if((trig_type==2'b01 || trig_type==2'b10 || trig_type==2'b10) && (trig_en0 ||trig_en1 || trig_en2 ||trig_en3))begin
+								if(trig_en0 ||trig_en1 || trig_en2 ||trig_en3)begin
 									data_store3 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[23:0]};
-									trig_type <= trig_type;
-									if(trigout_end!=1'b0)begin
-										trig_val <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
-										trigout_end <= 1'b0;
+									if(trig_en0 && trig_type0!=2'b11 && !zero_trig_type)begin
+										trig_val0 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
+									end
+									else if(trig_en1 && trig_type1!=2'b11 && !zero_trig_type)begin
+										trig_val1 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
+									end
+									else if(trig_en2 && trig_type2!=2'b11 && !zero_trig_type)begin
+										trig_val2 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
+									end
+									else if(trig_en3 && trig_type3!=2'b11 && !zero_trig_type)begin
+										trig_val3 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]};
 									end
 									else begin
-										trig_val <= trig_val;
+										trig_val0 <= trig_val0;
+										trig_val1 <= trig_val1;
+										trig_val2 <= trig_val2;
+										trig_val3 <= trig_val3;
 									end
+										
 								end
 								else begin
 									data_store3 <= {8'hff,data_store3[23:0]};
-									trig_type <= 2'b11;
-									trig_val <= trig_val;
+									trig_val0 <= trig_val0;
+									trig_val1 <= trig_val1;
+									trig_val2 <= trig_val2;
+									trig_val3 <= trig_val3;
 								end
 							end
 							else if(hA5==1'b1)begin
 								data_store3 <= {data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[23:0]};
-								trig_val <= trig_val;
-								trig_type <= 2'b11;
 							end
 							else if(h5C==1'b1)begin
 								data_store3 <= {8'hff,data_store3[23:0]};
-								trig_val <= trig_val;
-								trig_type <= 2'b11;
 							end
 							else if(h00==1'b1)begin
 								data_store3 <= {8'hff,data_store3[23:0]};
-								trig_val <= trig_val;
-								trig_type <= 2'b11;
 							end
 							else begin
 								data_store3 <= 32'hffffffff;
-								trig_val <= trig_val;
-								trig_type <= 2'b11;
 							end
 						end
 						else if(byte_count==5'd5)begin
@@ -646,6 +656,9 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 								else if(byte_count==5'd0 &&(h00==1 || hA5==1 || h53==1 || h5C==1))begin
 									txD <= 1;
 								end
+								else if(!h00 && !hA5 && !h53 && !h5C)begin
+									txD <= 1;
+								end
 								else begin
 									txD <= 0;
 								end
@@ -711,7 +724,7 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 			end
 			
 			
-			if(!nrst || (!h5C_en0 && !h5C_en1 && !h5C_en2 && !h5C_en3) || data_store3[31:0]==32'hffffff5c)begin
+			if(!nrst || (!h5C_en0 && !h5C_en1 && !h5C_en2 && !h5C_en3) || data_store3[31:0]==32'hffffff53)begin
 				if(!nrst)begin
 					trigout_ch0 <= 0;
 					trigout_ch1 <= 0;
@@ -727,134 +740,142 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 				count4 <= 0;
 				bit_count4 <= 0;
 				byte_count4 <= 0;
-				//if(trig_type==2'b10)begin
-					//if(h5C_en0  && trig_en0)begin
-						//trigout_ch0 <= 1'b1;
-					//end
-					//else if(h5C_en1 && trig_en1)begin
-						//trigout_ch1 <= 1'b1;
-					//end
-					//else if(h5C_en2  && trig_en2)begin
-						//trigout_ch2 <= 1'b1;
-					//end
-					//else if(h5C_en3  && trig_en3)begin
-						//trigout_ch3 <= 1'b1;
-					//end
-					//else begin
-						//trigout_ch0 <= trigout_ch0;
-						//trigout_ch1 <= trigout_ch1;
-						//trigout_ch2 <= trigout_ch2;
-						//trigout_ch3 <= trigout_ch3;
-					//end
-				//end
-				//else begin
-					//if(h5C_en0 && trig_en0)begin
-						//trigout_ch0 <= 1'b0;
-					//end
-					//else if(h5C_en1 && trig_en1)begin
-						//trigout_ch1 <= 1'b0;
-					//end
-					//else if(h5C_en2 && trig_en2)begin
-						//trigout_ch2 <= 1'b0;
-					//end
-					//else if(h5C_en3 && trig_en3)begin
-						//trigout_ch3 <= 1'b0;
-					//end
-					//else begin
-						//trigout_ch0 <= trigout_ch0;
-						//trigout_ch1 <= trigout_ch1;
-						//trigout_ch2 <= trigout_ch2;
-						//trigout_ch3 <= trigout_ch3;
-					//end
-				//end
 			end
 			else begin
-				if(count4!=600)begin
+				if(count4!=95)begin ///////////////////////////////Adjust this, so the pulses of trig out is visible on logic analyzer..
 					count4 <= count4 +20'b1;
 				end
 				else begin
 					count4 <= 20'b0;
 					if(bit_count4!=5'd9)begin
 						if(bit_count4<5'd5)begin
-							if(trig_type != 2'b10)begin
-								if(h5C_en0 && trig_en0)begin
+							if(trig_type0 != 2'b10)begin////////
+								if(h5C_en0)begin
 									trigout_ch0 <= 1'b1;
-								end
-								else if(h5C_en1 && trig_en1)begin
-									trigout_ch1 <= 1'b1;
-								end
-								else if(h5C_en2 && trig_en2)begin
-									trigout_ch2 <= 1'b1;
-								end
-								else if(h5C_en3 && trig_en3)begin
-									trigout_ch3 <= 1'b1;
 								end
 								else begin
 									trigout_ch0 <= trigout_ch0;
+								end
+							end
+							else begin
+								if(h5C_en0)begin
+									trigout_ch0 <= 1'b0;
+								end
+								else begin
+									trigout_ch0 <= trigout_ch0;
+								end
+							end
+							if(trig_type1 != 2'b10)begin////////
+								if(h5C_en1)begin
+									trigout_ch1 <= 1'b1;
+								end
+								else begin
 									trigout_ch1 <= trigout_ch1;
+								end
+							end
+							else begin
+								if(h5C_en1)begin
+									trigout_ch1 <= 1'b0;
+								end
+								else begin
+									trigout_ch1 <= trigout_ch1;
+								end
+							end
+							if(trig_type2 != 2'b10)begin////////
+								if(h5C_en2)begin
+									trigout_ch2 <= 1'b1;
+								end
+								else begin
 									trigout_ch2 <= trigout_ch2;
+								end
+							end
+							else begin
+								if(h5C_en2)begin
+									trigout_ch2 <= 1'b0;
+								end
+								else begin
+									trigout_ch2 <= trigout_ch2;
+								end
+							end
+							if(trig_type3 != 2'b10)begin////////
+								if(h5C_en3)begin
+									trigout_ch3 <= 1'b1;
+								end
+								else begin
 									trigout_ch3 <= trigout_ch3;
 								end
 							end
 							else begin
-								if(h5C_en0 && trig_en0)begin
-									trigout_ch0 <= 1'b0;
-								end
-								else if(h5C_en1 && trig_en1)begin
-									trigout_ch1 <= 1'b0;
-								end
-								else if(h5C_en2 && trig_en2)begin
-									trigout_ch2 <= 1'b0;
-								end
-								else if(h5C_en3 && trig_en3)begin
+								if(h5C_en3)begin
 									trigout_ch3 <= 1'b0;
 								end
 								else begin
-									trigout_ch0 <= trigout_ch0;
-									trigout_ch1 <= trigout_ch1;
-									trigout_ch2 <= trigout_ch2;
 									trigout_ch3 <= trigout_ch3;
 								end
 							end
 						end
-						else begin
-							if(trig_type != 2'b10)begin
-								if(h5C_en0 && trig_en0)begin
+						else begin/////////////////////////////////////////////
+							if(trig_type0 != 2'b10)begin//////////
+								if(h5C_en0)begin
 									trigout_ch0 <= 1'b0;
-								end
-								else if(h5C_en1 && trig_en1)begin
-									trigout_ch1 <= 1'b0;
-								end
-								else if(h5C_en2 && trig_en2)begin
-									trigout_ch2 <= 1'b0;
-								end
-								else if(h5C_en3 && trig_en3)begin
-									trigout_ch3 <= 1'b0;
 								end
 								else begin
 									trigout_ch0 <= trigout_ch0;
+								end
+							end
+							else begin
+								if(h5C_en0)begin
+									trigout_ch0 <= 1'b1;
+								end
+								else begin
+									trigout_ch0 <= trigout_ch0;
+								end
+							end
+							if(trig_type1 != 2'b10)begin//////////
+								if(h5C_en1)begin
+									trigout_ch1 <= 1'b0;
+								end
+								else begin
 									trigout_ch1 <= trigout_ch1;
+								end
+							end
+							else begin
+								if(h5C_en1)begin
+									trigout_ch1 <= 1'b1;
+								end
+								else begin
+									trigout_ch1 <= trigout_ch1;
+								end
+							end
+							if(trig_type2 != 2'b10)begin//////////
+								if(h5C_en2)begin
+									trigout_ch2 <= 1'b0;
+								end
+								else begin
 									trigout_ch2 <= trigout_ch2;
+								end
+							end
+							else begin
+								if(h5C_en2)begin
+									trigout_ch2 <= 1'b1;
+								end
+								else begin
+									trigout_ch2 <= trigout_ch2;
+								end
+							end
+							if(trig_type3 != 2'b10)begin//////////
+								if(h5C_en3)begin
+									trigout_ch3 <= 1'b0;
+								end
+								else begin
 									trigout_ch3 <= trigout_ch3;
 								end
 							end
 							else begin
-								if(h5C_en0 && trig_en0)begin
-									trigout_ch0 <= 1'b1;
-								end
-								else if(h5C_en1 && trig_en1)begin
-									trigout_ch1 <= 1'b1;
-								end
-								else if(h5C_en2 && trig_en2)begin
-									trigout_ch2 <= 1'b1;
-								end
-								else if(h5C_en3 && trig_en3)begin
+								if(h5C_en3)begin
 									trigout_ch3 <= 1'b1;
 								end
 								else begin
-									trigout_ch0 <= trigout_ch0;
-									trigout_ch1 <= trigout_ch1;
-									trigout_ch2 <= trigout_ch2;
 									trigout_ch3 <= trigout_ch3;
 								end
 							end
@@ -862,22 +883,51 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 						bit_count4 <= bit_count4 + 1;
 					end
 					else begin
-						if(trig_val != byte_count4)begin
-							byte_count4 <= byte_count4 + 1;
-							bit_count4 <= 0;
+						if(h5C_en0 && h5C)begin
+							if(trig_val0!= byte_count4+1 && trig_val0!=0)begin//////////
+								byte_count4 <= byte_count4 + 1;
+								bit_count4 <= 0;
+							end
+							else begin
+								byte_count4 <= byte_count4;
+								bit_count4 <= bit_count4;
+							end
+						end
+						else if(h5C_en1 && h5C)begin
+							if(trig_val1!= byte_count4+1 && trig_val1!=0)begin//////////
+								byte_count4 <= byte_count4 + 1;
+								bit_count4 <= 0;
+							end
+							else begin
+								byte_count4 <= byte_count4;
+								bit_count4 <= bit_count4;
+							end
+						end
+						else if(h5C_en2 && h5C)begin
+							if(trig_val2!= byte_count4+1 && trig_val2!=0)begin//////////
+								byte_count4 <= byte_count4 + 1;
+								bit_count4 <= 0;
+							end
+							else begin
+								byte_count4 <= byte_count4;
+								bit_count4 <= bit_count4;
+							end
+						end
+						else if(h5C_en3 && h5C)begin
+							if(trig_val3!= byte_count4+1 && trig_val3!=0)begin//////////
+								byte_count4 <= byte_count4 + 1;
+								bit_count4 <= 0;
+							end
+							else begin
+								byte_count4 <= byte_count4;
+								bit_count4 <= bit_count4;
+							end
 						end
 						else begin
 							byte_count4 <= byte_count4;
-							bit_count4 <= bit_count4;
-							if(h53)begin
-								trigout_end <= 1'b1;
-								byte_count4 <= 0;
-								trig_val <= 0;
-							end
-							else begin
-								trigout_end <= trigout_end;
-							end
+							trigout_end <= trigout_end;
 						end
+						
 					end
 				end
 			end
