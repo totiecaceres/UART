@@ -391,6 +391,78 @@ module tb_UART_mlc2;
 				end
 			end
 			
+			#(delay*100);
+			#(delay*10);
+			
+			assign data_in = 8'h00;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			//#(delay*10);
+			//end
+			assign data_in = 8'h00;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			#(delay*10);
+			assign data_in = 8'h02;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			
+			assign data_in = 8'h15;
+			for(j=0; j<10; j=j+1)begin
+				if(j==0)begin
+					assign rx = 0;
+					#(delay);						
+				end
+				else if(j==9)begin
+					assign rx = 1;
+					#(delay);
+				end
+				else begin
+					assign rx = data_in[j-1];
+					#(delay);							//104 us = 1/9600
+				end
+			end
+			#(delay*100);
+			#(delay*10);
+			
+			////////////////////////////////////////////////////////////////////////
+			
 		
 		end
 

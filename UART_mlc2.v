@@ -1,15 +1,19 @@
-module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_ch2, trigout_ch3, vctrout_ch0);
+module UART_mlc2(clk, nrst, rx, rx2, tx, txD, vctrout_ch0, vctrin_ch0);
 	input clk;
 	input nrst;
 	input rx;
 	output rx2;
 	output tx;
 	output txD;
-	output trigout_ch0;
-	output trigout_ch1;
-	output trigout_ch2;
-	output trigout_ch3;
+	//output trigout_ch0;
+	//output trigout_ch1;
+	//output trigout_ch2;
+	//output trigout_ch3;
 	output [7:0] vctrout_ch0;
+	input [7:0] vctrin_ch0;
+	//input [7:0] vctrin_ch1;
+	//input [7:0] vctrin_ch2;
+	//input [7:0] vctrin_ch3;
 	assign rx2 = rx;
 	
 	reg [19:0] count = 20'd0; //clk_div
@@ -41,6 +45,10 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 	reg [7:0] vctrout_ch1 = 8'd0;
 	reg [7:0] vctrout_ch2 = 8'd0;
 	reg [7:0] vctrout_ch3 = 8'd0;
+	//reg [7:0] vctrin_ch0 = 8'd0;
+	reg [7:0] vctrin_ch1 = 8'd0;
+	reg [7:0] vctrin_ch2 = 8'd0;
+	reg [7:0] vctrin_ch3 = 8'd0;
 	reg trigout_ch0 = 1'b0;
 	reg trigout_ch1 = 1'b0;
 	reg trigout_ch2 = 1'b0;
@@ -324,19 +332,19 @@ module UART_mlc2(clk, nrst, rx, rx2, tx, txD, trigout_ch0, trigout_ch1, trigout_
 						    end
 							else if(h00==1'b1)begin
 							     if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h00)begin
-										data_store3 <= {8'hff,vctrout_ch0[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
+										data_store3 <= {8'hff,vctrin_ch0[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 										v_ind <= 3'd1;
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h01)begin
-										data_store3 <= {8'hff,vctrout_ch1[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
+										data_store3 <= {8'hff,vctrin_ch1[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 										v_ind <= 3'd2;
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h02)begin
-										data_store3 <= {8'hff,vctrout_ch2[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
+										data_store3 <= {8'hff,vctrin_ch2[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 										v_ind <= 3'd3;
 							     end
 							     else if({data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7]}==8'h03)begin
-										data_store3 <= {8'hff,vctrout_ch3[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
+										data_store3 <= {8'hff,vctrin_ch3[7:0],data_store[0],data_store[1],data_store[2],data_store[3],data_store[4],data_store[5],data_store[6],data_store[7],data_store3[7:0]};
 										v_ind <= 3'd4;
 							     end
 							     else begin
